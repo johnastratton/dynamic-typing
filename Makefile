@@ -1,5 +1,5 @@
 
-CFLAGS=-O3 -fno-inline -I /home/lillie/sniper-6.1/include
+CFLAGS=-O3 -fno-inline -I /home/lpentecost/Documents/sniper-6.1/include
 
 all: microbench
 

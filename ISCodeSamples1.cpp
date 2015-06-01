@@ -9,7 +9,7 @@
 #include "ISCodeSamples1.h"
 #include <cmath>
 #include <iostream>
-//#include "sim_api.h"
+#include "sim_api.h"
 
 #define NUMITEMS 100000
 //Implementation with member function
@@ -37,6 +37,9 @@ class sample_member{
 public:
     void update(){
         x++;
+    }
+    virtual void unused(){
+	x++;
     }
 };
 
@@ -76,11 +79,11 @@ int main(int argc, const char * argv[]) {
 //    }
 //    return 0;
     sample_member member[NUMITEMS];
-    sample_virtual virt[NUMITEMS];
-//    SimRoiBegin();
+//    sample_virtual virt[NUMITEMS];
+    SimRoiStart();
     run_member(member);
-    run_virtual(virt);
-//    SimRoiEnd();
+//    run_virtual(virt);
+    SimRoiEnd();
 }
 
 
