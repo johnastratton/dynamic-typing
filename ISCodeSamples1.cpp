@@ -11,7 +11,8 @@
 #include <iostream>
 //#include "sim_api.h"
 
-#define NUMITEMS 500000
+#define NUMITEMS 10000
+#define REPS 1000000
 //Implementation with member function
 
 //void function_plus(double* d){
@@ -52,7 +53,7 @@ public:
 };
 
 void run_member(sample_member* sample_array){
-        for (int i=0; i<NUMITEMS; i++){
+        for (int i=0; i<REPS; i++){
             for (int j=0; j<NUMITEMS; j++){
 		sample_array[j].update();
 	    }
@@ -60,7 +61,7 @@ void run_member(sample_member* sample_array){
 }
 
 void run_virtual(sample_virtual* sample_array){
-        for (int i=0; i<NUMITEMS; i++){
+        for (int i=0; i<REPS; i++){
             for (int j=0; j<NUMITEMS; j++){
 		sample_array[j].update();
             }
