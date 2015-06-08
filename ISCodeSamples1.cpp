@@ -81,7 +81,7 @@ int main(int argc, const char * argv[]) {
 //    sample_member member[NUMITEMS];
     sample_virtual virt[NUMITEMS];
 //    SimRoiStart();
-    run_member(member);
+//    run_member(member);
     run_virtual(virt);
 //    SimRoiEnd();
 }
