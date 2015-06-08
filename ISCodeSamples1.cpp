@@ -82,11 +82,11 @@ int main(int argc, const char * argv[]) {
 //            vsample_array[i]->vfunction_plus(&sample_array[i]);
 //    }
 //    return 0;
-//    sample_member member[NUMITEMS];
-    sample_virtual virt[NUMITEMS];
+    sample_member member[NUMITEMS];
+//    sample_virtual virt[NUMITEMS];
 //    SimRoiStart();
-//    run_member(member);
-    run_virtual(virt);
+    run_member(member);
+//    run_virtual(virt);
 //    SimRoiEnd();
 }
 
