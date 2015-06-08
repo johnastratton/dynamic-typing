@@ -11,7 +11,7 @@
 #include <iostream>
 //#include "sim_api.h"
 
-#define NUMITEMS 100000
+#define NUMITEMS 1000000
 //Implementation with member function
 
 //void function_plus(double* d){
