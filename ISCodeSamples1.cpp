@@ -53,14 +53,18 @@ public:
 
 void run_member(sample_member* sample_array){
         for (int i=0; i<NUMITEMS; i++){
-            sample_array[i].update();
+            for (int j=0; j<NUMITEMS; j++){
+		sample_array[j].update();
+	    }
         }
 }
 
 void run_virtual(sample_virtual* sample_array){
         for (int i=0; i<NUMITEMS; i++){
-            sample_array[i].update();
-        }
+            for (int j=0; j<NUMITEMS; j++){
+		sample_array[j].update();
+            }
+	}
 }
 
 //run both
