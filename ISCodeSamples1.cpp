@@ -9,9 +9,10 @@
 #include "ISCodeSamples1.h"
 #include <cmath>
 #include <iostream>
-#include "sim_api.h"
+//#include "sim_api.h"
 
-#define NUMITEMS 100000
+#define NUMITEMS 10000
+#define REPS 1000000
 //Implementation with member function
 
 //void function_plus(double* d){
@@ -52,15 +53,19 @@ public:
 };
 
 void run_member(sample_member* sample_array){
-        for (int i=0; i<NUMITEMS; i++){
-            sample_array[i].update();
+        for (int i=0; i<REPS; i++){
+            for (int j=0; j<NUMITEMS; j++){
+		sample_array[j].update();
+	    }
         }
 }
 
 void run_virtual(sample_virtual* sample_array){
-        for (int i=0; i<NUMITEMS; i++){
-            sample_array[i].update();
-        }
+        for (int i=0; i<REPS; i++){
+            for (int j=0; j<NUMITEMS; j++){
+		sample_array[j].update();
+            }
+	}
 }
 
 //run both
@@ -80,10 +85,10 @@ int main(int argc, const char * argv[]) {
 //    return 0;
     sample_member member[NUMITEMS];
 //    sample_virtual virt[NUMITEMS];
-    SimRoiStart();
+//    SimRoiStart();
     run_member(member);
 //    run_virtual(virt);
-    SimRoiEnd();
+//    SimRoiEnd();
 }
 
 
