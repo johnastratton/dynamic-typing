@@ -1,0 +1,437 @@
+\documentclass[10pt,answers]{exam}
+\noprintanswers
+
+\usepackage{graphicx}
+\usepackage{geometry}
+\geometry{top=1in,bottom=1in,left=1in,right=1in}
+\usepackage{txfonts}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{longtable}
+\usepackage{fancyvrb}
+\usepackage{listings}
+\lstloadlanguages{python}
+\lstset{
+  basicstyle=\small\ttfamily,
+}
+
+\def\labname{File I/O and lists}
+\def\labnumber{9}
+
+\date{}
+\author{}
+
+\title{COSC 101: Introduction to Computing I\\ 
+Lab \labnumber: \labname\\
+Spring 2015}
+
+\begin{document}
+
+\maketitle
+
+For this lab, we will get practice writing functions that work with text 
+files and lists to simulate a Word-Template game (often call MadLibs after 
+the series that made them popular.)  You should write all your work in a file 
+named \lstinline{lab9.py}.
+
+For each function you write, ensure that your variable names are meaningful, 
+that you have appropriate comments, and that you write docstrings.
+
+The components of this lab all work with Work-Template files using the 
+following format: a text file that begins with a list of prompts, one per 
+line, followed by a sentinel line marking the end of the prompts, followed 
+by the text of the word template with references to the original prompts.
+Some examples are shown below and provided as ``ShortTemplate.txt'' and ``Chinchillas.txt''.  
+Remember to put data files in the same directory/folder as your Python files!
+
+\lstinputlisting{ShortTemplate.txt}
+
+\lstinputlisting{Chinchillas.txt}
+
+\begin{questions}
+
+\question Write a function called \lstinline{read_prompts} that takes one parameter, which is a file name string.  The file referred to 
+is a word template file, where the first several lines will indicate prompts to offer the user for filling in the various blanks in the 
+remaining text.  This function should open the file, read the prompts, close the file, and return a list of prompts to offer the user.  
+Each line contains exactly one prompt, and the prompts are ended by the sentinel line \lstinline{***end of prompts***}.  There is more 
+to the file, but that will be handled later; this function just needs to read the prompts from the first part of the file.
+
+\begin{lstlisting}
+>>> read_prompts("Chinchillas.txt")
+['adjective', 'adverb (Capitalized)', 'verb (past tense)', 'adjective', 'adjective', 
+'noun (body part, plural)', 'noun (animal)', 'noun (body part, plural)', 
+'noun (body part, plural)', 'noun (color)', 'noun']
+\end{lstlisting}
+
+\begin{solution}
+\begin{lstlisting}
+def read_prompts(filename):
+    infile = open(filename, 'r')
+    infile.readline()
+    prompt_list = []
+    for line in infile:
+        if line.strip() != "***end of prompts***":
+            prompt_list += [line.strip()]
+        else:
+            break
+    infile.close()
+    return prompt_list
+\end{lstlisting}
+\end{solution}
+
+\question Write a function \lstinline{ask_prompts} that will take a list in the format returned by 
+\lstinline{read_prompts}, ask the user to respond to each prompt, and return a new list with the 
+results of the prompts offered.  An example is shown below.
+
+\begin{lstlisting}
+>>> responses = ask_prompts(read_prompts("Chinchillas.txt"))
+adjective: persnickety
+adverb (Capitalized): Quickly
+verb (past tense): felt
+adjective: boisterous
+adjective: funny
+noun (body part, plural): elbows
+noun (animal): squirrel
+noun (body part, plural): feet
+noun (body part, plural): arms
+noun (color): neon green
+noun: ball
+>>> print responses
+['persnickety', 'Quickly', 'felt', 'boisterous', 'funny', 'elbows', 'squirrel', 
+'feet', 'arms', 'neon green', 'ball']
+\end{lstlisting}
+
+\begin{solution}
+\begin{lstlisting}
+def ask_prompts(prompt_list):
+    responses = [''] * len(prompt_list)
+
+    for i in range(len(prompt_list)):
+        responses[i] = raw_input(prompt_list[i] + ": ")
+    return responses
+\end{lstlisting}
+\end{solution}
+
+\question Write a function called \lstinline{read_template} that takes one parameter, which is a file name string.  The file referred to 
+is a word template file, in the format discussed previously. 
+This function should open the file, read the template (the part of the file after the prompts, marked by the 
+\lstinline{"***end of prompts***"} sentinel), close the file, and return a list of 
+strings representing the contents of the template.
+
+\begin{lstlisting}
+>>> read_template("ShortTemplate.txt")
+['If |0| |1| their opponents, they will make it into the playoffs.\n', 
+'Everybody expects this, of course, because they have quite the \n', 
+"record, and to |1| looks like |0|'s destiny.\n"]
+>>> read_template("Chinchillas.txt")
+['Chinchillas are |0| pets for those that like to own unique pets. |1|, if you \n',
+'have ever |2| one, they are actually |3|. One may describe this animal as \n', 
+'looking similar to a/an |4| squirrel with big |5| or having a |6|`s body with \n', 
+'large mouse-like |7| and a squirrel`s |8|.  They come in several colors, \n', 
+'ranging from white to |9| velvet.  One of the most unique characteristics of \n', 
+'chinchillas is that they bathe in dust or |10|, rather than water.\n']
+\end{lstlisting}
+
+\begin{solution}
+\begin{lstlisting}
+def read_template(filename):
+    infile = open(filename, 'r')
+    line = ""
+    while line.strip() != "***end of prompts***":
+        line = infile.readline()
+
+    line = infile.readline()
+    template = []
+    while line != "":
+        template += [line]
+        line = infile.readline()
+    infile.close()
+
+    return template
+\end{lstlisting}
+\end{solution}
+
+\question Write a function \lstinline{replace_prompts} that takes two arguments.  The first 
+argument is a string which may contain one or more prompt references.  A prompt reference will 
+be bounded by bar characters (\lstinline{"|"}, which is usually typed with Shift-backslash on 
+a standard English keyboard.)  Between those bars will be an integer, describing the index of the 
+prompt that goes with the place of that prompt reference.  The second argument is a list of 
+answers that should be used in place of each prompt.
+
+Your function should work for zero or more prompt references that need to be replaced.  
+(Hint, think about how you can use the \lstinline{split} and \lstinline{join} string 
+functions to simplify searching for the placeholders.)  See the examples below.
+
+\begin{lstlisting}
+>>> line = "Chinchillas are |0| pets for those that like to own unique pets.  |1|, if you \n"
+>>> replace_prompts(line, ["amazing", "Really"])
+"Chinchillas are amazing pets for those that like to own unique pets.  Really, if you \n"
+>>> line = 'If |0| |1| their opponents, they will make it into the playoffs.\n'
+>>> replace_prompts(line, ["The Bills", "crush"])
+'If The Bills crush their opponents, they will make it into the playoffs.\n'
+>>> line = 'Everybody expects this, of course, because they have quite the \n'
+>>> replace_prompts(line, ["The Bills", "crush"])
+'Everybody expects this, of course, because they have quite the \n'
+>>> line = "record, and to |1| looks like |0|'s destiny.\n"
+>>> replace_prompts(line, ["The Bills", "crush"])
+"record, and to crush looks like The Bills's destiny.\n"
+\end{lstlisting}
+
+\begin{solution}
+\begin{lstlisting}
+def replace_prompts(line, answers):
+    start_replace = line.find("[")
+
+    sections = line.split("|")
+    index = 1
+    while index < len(sections):
+        sections[index] = answers[int(sections[index])]
+        index += 2
+    return "".join(sections)
+\end{lstlisting}
+\end{solution}
+
+\question Write a function \lstinline{word_template} that takes one parameter, a filename holding 
+a word template, and plays the game with the user.  Use the functions written from the previous 
+parts.  Your program should read and ask the user to respond to prompts based on the introductory 
+section of the file, then read and print the word template text with all of the prompts substituted.  
+
+\begin{lstlisting}
+>>> word_template("ShortTemplate.txt")
+noun (sports team): The Bills
+verb: crush
+
+If The Bills crush their opponents, they will make it into the playoffs.
+Everybody expects this, of course, because they have quite the 
+record, and to crush looks like The Bills's destiny.
+>>> word_template("Chinchillas.txt")
+adjective: amazing
+adverb (Capitalized): Quickly
+verb (past tense): phased
+adjective: fluid
+adjective: frisky
+noun (body part, plural): shins
+noun (animal): hippo
+noun (body part, plural): arms
+noun (body part, plural): lungs
+noun (color): neon green
+noun: lard
+
+Chinchillas are amazing pets for those that like to own unique pets. Quickly, if you 
+have ever phased one, they are actually fluid. One may describe this animal as 
+looking similar to a/an frisky squirrel with big shins or having a hippo`s body with 
+large mouse-like arms and a squirrel`s lungs.  They come in several colors, 
+ranging from white to neon green velvet.  One of the most unique characteristics of 
+chinchillas is that they bathe in dust or lard, rather than water.
+\end{lstlisting}
+
+\begin{solution}
+\begin{lstlisting}
+def word_template(filename):
+    prompts = read_prompts(filename)
+    answers = ask_prompts(prompts)
+    template = read_template(filename)
+    print ""
+    for line in template:
+        print replace_prompts(line, answers),
+\end{lstlisting}
+\end{solution}
+
+\question {\bf Optional challenge problem: Maze Solver}. 
+
+For this challenge problem, you will be writing code that will procedurely solve a text based maze.  The program will read in the specified maze, then it will output its solution by printing the ``path'' it took to solve the maze.
+
+The mazes will be made up of simple text characters and will need to be read in from a text file.  Each file will contain only a single maze, and no other additional data.  Below is a what a sample maze file would look like, take a look at the provided sample mazes for more examples.
+
+\begin{verbatim}
+xxxxxxxxxxxxxxxx
+xxxxxxxxxxxxOOOx
+xxxxxxOOOOxxOxOx
+xxxxxxOxxOxxOxOx
+xxxxxxOxxOOOOxOx
+SOOOOOOxxxxxxxOF
+xxxxxxxxxxxxxxxx
+\end{verbatim}
+
+For each maze file:
+\begin{itemize}
+    \item S - is the start of the maze
+    \item O - are spots you're able to move or ``walk'' on (this is the letter `O', not the number zero)
+    \item x - are spots you cannot move or ``walk'' on (this is a lower case `x')
+    \item F - is the finish.
+\end{itemize}
+Each maze can be of a different height and width, but you can assume that all mazes are rectangular (each row has the same width, each column has the same height).  You can also assume that the text for the maze will start at the first line at the file, and the text for the maze ends at the first blank line.  Lastly, each maze will be a linear path.  In other words, there will be only one path through the maze with no branches, and the path will not double back on itself.
+
+Your program will need to read in the maze file and then print out the solution of the maze using the cardinal directions, starting at the ``start'' point ('S') and moving to the finish point ('F').  The start point ('S') will always appear in the first column of the maze.  Your program can only enter or ``walk'' on the spaces indicated with an `O', `S' or `F' and cannot enter a space designated with an `x'.
+
+Given the above example, the output solution for this maze would be:
+\begin{verbatim}
+EEEEEENNNEEESSEEENNNEESSSSE    
+\end{verbatim}
+Each letter in this output represents the first letter of one of the four cardinal directions: North, South, East or West.
+
+\begin{parts}
+\part Begin by creating a \lstinline{main} function.  This function will be what drives the execution of your program.  Inside your \lstinline{main} function you should prompt the user to enter the filename of the maze to be solved.  You will then call the next function you will create, lstinline{readMaze}.
+
+lstinline{readMaze} should accept one string as an argument, which will be the filename.  You will then read through the file line by line, and store the layout of the maze.
+
+It is up to you how you wish to store the layout of this maze.  You will ultimately need to be able to track your progress through the maze, so keep that in mind.  Some kind of list will most likely be useful here, but there are many different approaches you can take.  Once you have read through the maze file and stored the information you need, return this data back to \lstinline{main}.
+
+If you are unsure how to store the maze, talk it over with your lab instructor.
+
+\part Now you will need to solve the maze.  Write a function called \lstinline{solveMaze} which takes one argument, the data representing the layout of the maze that you generated in lstinline{readMaze} in Part 1.  The \lstinline{solveMaze} function should traverse this maze, starting at the `S' and ending at the `F', generating a single string of cardinal directions representing the steps it took to get there.
+
+Most likely, it will be beneficial to write some additional helper functions to be used in conjunction with \lstinline{solveMaze}.  Once \lstinline{solveMaze} has generated a solution, it should return its solution back to \lstinline{main} as a single string.
+\end{parts}
+
+Additional Hints
+\begin{itemize}
+    \item Be careful about negative indexing if you are using a list to store the layout of your maze
+
+    \item It may be a good idea to print out the result of your lstinline{readMaze} to double check for any issues or extraneous characters
+
+    \item If using lists, be careful of aliasing
+
+    \item Don't forget file extensions on your filenames!  Your text file will most likely have an extension of .txt at the end of the filename.  By default, windows likes to hide the file extensions of the filename when browsing via explorer.
+
+    \item The correct solutions for the 3 provided mazes are:
+
+\begin{verbatim}
+sample_easy.txt
+EEENNEE
+\end{verbatim}
+
+\begin{verbatim}
+sample_medium.txt
+EEEEEENNNEEESSEEENNNEESSSSE
+\end{verbatim}
+
+\begin{verbatim}
+sample_hard.txt
+SSSSEEENNWNNEEESSSSSSSWWWWWSSSEENEESESSSEEEEEEEEEEEEEEEENNWWWWWWWWWWWWWWNNEEEEEEEEEEEEEE
+NNWWWWWWWWWWWWWWNNNNNNEESSSEENNNEESSSEENNNEEEEEEEEEEEEESSWWWWWWWWWWWSSEEEEEEEEEEESSSSSSSS
+\end{verbatim}
+\end{itemize}
+
+
+\begin{solution}
+\begin{lstlisting}
+def readMaze(fname):
+    '''
+    (str) -> [list of str]
+    Reads in the maze file (filename specified by fname).
+    Builds a list of a strings, which each index in the list representing
+    a row of the maze file.
+    '''
+    f = open(fname)
+    maze = []
+    for line in f:
+        if line == '':
+            return maze
+        maze += [line.strip()] #get rid of the newline chars at the end
+    return maze
+
+
+
+def findStart(maze):
+    '''
+    ([list of str]) -> int
+    Finds the 'start' position's row in the maze, represented by an 'S'
+    '''
+    for row in range(len(maze)):
+        if maze[row][0] == 'S':
+            return row
+    print "This maze has no start!"
+    return 0
+
+
+def listSum(l1,l2):
+    '''
+    ([list of int], [list of int]) -> [list of int]
+    Adds together like indices of a list, returns new list
+    listSum([2, 4, 1], [7, 3, 2]) -> [9, 7, 3]
+    '''
+    lsum = []
+    for num in range(len(l1)):
+        lsum += [l1[num]+l2[num]]
+    return lsum
+
+
+
+    
+def solveMaze(maze):
+    '''
+    ([list of str]) -> str
+    Procedurally solves the "maze", represented by the list of strings.
+    Returns a string of cardinal directions indicating the solution.
+    ex: NNNEEENNEESSSS
+    '''
+    NORTH = [0,-1]
+    SOUTH = [0,1]
+    EAST = [1,0]
+    WEST = [-1,0]   #stores the change in coordinates for the different directions
+    move = [NORTH,SOUTH,EAST,WEST]
+    direction = "NSEW" #aligns to the 'direction' list, used for building the solution string
+    solution = ''
+    tile = ''
+    currentCoord = [0, findStart(maze)]
+    lastCoord = currentCoord
+    while tile != 'F':
+        for d in range(len(move)):  #attempt each direction's movement
+            nextCoord = listSum(currentCoord, move[d])
+            tile = getTile(maze,nextCoord)
+            if  nextCoord != lastCoord and tile != 'x': #make sure the tile is valid and that youre not moving backwards
+                lastCoord = currentCoord
+                currentCoord = nextCoord
+                solution += direction[d]
+                break
+    return solution
+
+
+
+def getTile(maze, coord):
+    '''
+    ([list of strings],[int,int]) -> str
+    Returns the 'tile' at the provided coordinate in the maze.
+    Either 'x', 'O', 'S', or 'F'
+    Returns an 'x' if the coordinate is out of bounds
+    ex: ['xxx', 'SOx', 'xOF'], [1,2] -> 'O'
+    '''
+    height = len(maze)
+    width = len(maze[0])
+    x = coord[0]
+    y = coord[1]
+    if x >= width or y >= height or x < 0 or y < 0: #checks for out of bounds
+        return "x"
+    return maze[y][x] 
+    
+
+def main():
+    '''
+    Driver for program.  Prompts for maze filename, prints solution
+    '''
+    fname = raw_input("Enter the file name for the maze file: ")
+    maze =readMaze(fname)
+    print solveMaze(maze)
+
+
+main()
+\end{lstlisting}
+\end{solution}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{questions}
+\end{document}

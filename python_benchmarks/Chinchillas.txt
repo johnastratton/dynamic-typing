@@ -1,0 +1,21 @@
+
+adjective
+adverb (Capitalized)
+verb (past tense)
+adjective
+adjective
+noun (body part, plural)
+noun (animal)
+noun (body part, plural)
+noun (body part, plural)
+noun (color)
+noun
+***end of prompts***
+
+Chinchillas are |0| pets for those that like to own unique pets. |1|, if you 
+have ever |2| one, they are actually |3|. One may describe this animal as 
+looking similar to a/an |4| squirrel with big |5| or having a |6|`s body with 
+large mouse-like |7| and a squirrel`s |8|.  They come in several colors, 
+ranging from white to |9| velvet.  One of the most unique characteristics of 
+chinchillas is that they bathe in dust or |10|, rather than water.
+
