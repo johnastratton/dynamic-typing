@@ -9,10 +9,10 @@
 #include "ISCodeSamples1.h"
 #include <cmath>
 #include <iostream>
-//#include "sim_api.h"
+#include "sim_api.h"
 
 #define NUMITEMS 10000
-#define REPS 1000000
+#define REPS 10
 //Implementation with member function
 
 //void function_plus(double* d){
@@ -83,12 +83,12 @@ int main(int argc, const char * argv[]) {
 //            vsample_array[i]->vfunction_plus(&sample_array[i]);
 //    }
 //    return 0;
-    sample_member member[NUMITEMS];
-//    sample_virtual virt[NUMITEMS];
-//    SimRoiStart();
-    run_member(member);
-//    run_virtual(virt);
-//    SimRoiEnd();
+//    sample_member member[NUMITEMS];
+    sample_virtual virt[NUMITEMS];
+    SimRoiStart();
+//    run_member(member);
+    run_virtual(virt);
+    SimRoiEnd();
 }
 
 
